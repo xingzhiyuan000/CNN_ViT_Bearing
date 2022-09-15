@@ -37,13 +37,13 @@ class _DenseLayer(nn.Sequential):
         self.add_module("norm2", nn.BatchNorm2d(bn_size * growth_rate)),
         self.add_module("relu2", nn.ReLU(inplace=True)),
 
-        self.add_module("conv2", depthwise_separable_conv(bn_size * growth_rate,growth_rate)),
-        # self.add_module("conv2", nn.Conv2d(bn_size * growth_rate,
-        #                                    growth_rate,
-        #                                    kernel_size=3,
-        #                                    stride=1,
-        #                                    padding=1,
-        #                                    bias=False)),
+        #self.add_module("conv2", depthwise_separable_conv(bn_size * growth_rate,growth_rate)),
+        self.add_module("conv2", nn.Conv2d(bn_size * growth_rate,
+                                           growth_rate,
+                                           kernel_size=3,
+                                           stride=1,
+                                           padding=1,
+                                           bias=False)),
         self.drop_rate = drop_rate
     def forward(self, x):
         new_features=super(_DenseLayer,self).forward(x)
@@ -148,7 +148,7 @@ def densenet161(**kwargs: Any) -> DenseNet:
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("using {} device.".format(device))
-    model=densenet_60() #实例化网络模型
+    model=densenet121() #实例化网络模型
     model=model.to(device) #将模型转移到cuda上
     input=torch.ones((128,3,10,10)) #生成一个batchsize为64的，3个通道的10X10 tensor矩阵-可以用来检查网络输出大小
     input=input.to(device) #将数据转移到cuda上
