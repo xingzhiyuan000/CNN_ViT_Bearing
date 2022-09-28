@@ -11,6 +11,7 @@ from nets.Wang import *
 from nets.Wang_DS import *
 from nets.Wang_DS_Dropout import *
 from nets.Wang_DS_RGB import *
+from nets.Wang_Normal_RGB import *
 from nets.Wang_DS_RGB_Dropout import *
 from nets.Wang_DS_ViT_RGB import *
 from nets.DenseModel import *
@@ -21,7 +22,7 @@ import time
 #tensorboard使用方法：tensorboard --logdir "E:\Python\Fault Diagnosis\Classification\logs"
 #需要设置cuda的数据有: 数据，模型，损失函数
 
-save_epoch=10 #模型保存迭代次数间隔-10次保存一次
+save_epoch=20 #模型保存迭代次数间隔-10次保存一次
 Resume = False #设置为True是继续之前的训练 False为从零开始
 path_checkpoint = "E:\Python\Fault Diagnosis\Classification\models\DenseNet_DS_RGB_normal100_162.pth" #模型路径
 
@@ -73,7 +74,8 @@ test_dataloader = torch.utils.data.DataLoader(test_data_set,
 #wang=Wang_DS_RGB() #深度可分离卷积网络-RGB三通道
 #wang=Wang_DS_RGB_Dropout() #深度可分离卷积网络-RGB三通道-含Dropout层
 #wang=densenet169()
-wang=VisionTransformer()
+#wang=VisionTransformer()
+wang=Wang_Normal_RGB()
 
 #对已训练好的模型进行微调
 if Resume:
@@ -94,7 +96,7 @@ optimizer=torch.optim.SGD(wang.parameters(),lr=learing_rate)
 #设置训练网络的一些参数
 total_train_step=0 #记录训练的次数
 total_test_step=0 #记录测试的次数
-epoch=100 #训练的轮数
+epoch=1000 #训练的轮数
 
 #添加tensorboard
 writer=SummaryWriter("logs",flush_secs=5)
