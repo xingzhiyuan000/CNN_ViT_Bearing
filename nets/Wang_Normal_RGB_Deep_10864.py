@@ -25,11 +25,8 @@ class five_normal_conv(nn.Module):
         self.conv = nn.Conv2d(in_channels=ch_in, out_channels=ch_out, kernel_size=3, stride=1, padding=1, dilation=1)
         self.bn = nn.BatchNorm2d(num_features=ch_out)
     def forward(self,x):
-        for i in range(5):
-            residual = x
+        for i in range(3):
             x = F.relu(self.bn(self.conv(x)))
-            x += residual
-            x = F.relu(x)
         return x
 
 # 搭建神经网络
