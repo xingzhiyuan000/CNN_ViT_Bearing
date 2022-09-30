@@ -26,14 +26,17 @@ class five_normal_conv(nn.Module):
         self.bn = nn.BatchNorm2d(num_features=ch_out)
     def forward(self,x):
         for i in range(5):
+            residual = x
             x = F.relu(self.bn(self.conv(x)))
+            x += residual
+            x = F.relu(x)
         return x
 
 # 搭建神经网络
 class Wang_Normal_RGB_Deep_10864(nn.Module):
     def __init__(self):
         super(Wang_Normal_RGB_Deep_10864, self).__init__()
-        # 1X10X10------64X10X10
+        # 3X10X10------64X10X10
         # self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1) #普通3X3卷积
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1, dilation=1)
         # self.conv1 =depthwise_separable_conv(3, 64) #深度可分离3X3卷积
@@ -56,9 +59,9 @@ class Wang_Normal_RGB_Deep_10864(nn.Module):
         # 将数据展平
         self.flatten = nn.Flatten()
         # 1024-----64
-        self.fc1 = nn.Linear(in_features=512 * 4 * 4, out_features=64,bias=True)
+        self.fc1 = nn.Linear(in_features=512 * 4 * 4, out_features=64,bias=False)
         # 64-----13
-        self.fc2 = nn.Linear(in_features=64, out_features=13,bias=True)
+        self.fc2 = nn.Linear(in_features=64, out_features=13,bias=False)
 
     def forward(self, x):
         x = F.relu(self.bn1(self.conv1(x)))

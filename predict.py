@@ -81,7 +81,7 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    model_path="E:\Python\Fault Diagnosis\Classification\models\wang_Normal_RGB_10864_iForest_1000.pth" #预测模型路径
+    model_path="E:\Python\Fault Diagnosis\Classification\models\wang_Normal_RGB_Deep_10864_iForest_1000.pth" #预测模型路径
 
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")

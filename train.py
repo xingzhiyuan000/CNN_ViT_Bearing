@@ -16,6 +16,7 @@ from nets.Wang_DS_RGB_Dropout import *
 #from nets.Wang_DS_ViT_RGB import *
 from nets.Wang_Normal_ViT_RGB import *
 from nets.Wang_Normal_RGB_10864 import *
+from nets.Wang_Normal_RGB_Deep_10864 import *
 from nets.DenseModel import *
 from utils import read_split_data, plot_data_loader_image
 from my_dataset import MyDataSet
@@ -78,7 +79,8 @@ test_dataloader = torch.utils.data.DataLoader(test_data_set,
 #wang=densenet169()
 #wang=VisionTransformer()
 #wang=Wang_Normal_RGB()
-wang=Wang_Normal_RGB_10864()
+#wang=Wang_Normal_RGB_10864()
+wang=Wang_Normal_RGB_Deep_10864()
 
 #对已训练好的模型进行微调
 if Resume:
