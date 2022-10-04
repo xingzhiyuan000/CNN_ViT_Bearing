@@ -52,9 +52,9 @@ class depthwise_separable_conv(nn.Module):
         return x
 
 # 搭建神经网络
-class Wang_DS_ViT_RGB(nn.Module):
+class Wang_Normal_ViT_RGB(nn.Module):
     def __init__(self):
-        super(Wang_DS_ViT_RGB, self).__init__()
+        super(Wang_Normal_ViT_RGB, self).__init__()
         # 1X10X10------64X10X10
         # self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1) #普通3X3卷积
         self.conv1 =nn.Conv2d(in_channels=3,out_channels=64,kernel_size=3,stride=1,padding=1,dilation=1)
@@ -210,7 +210,7 @@ class VisionTransformer(nn.Module):
         norm_layer = norm_layer or partial(nn.LayerNorm, eps=1e-6)
         act_layer = act_layer or nn.GELU
 
-        self.patch_embed = Wang_DS_ViT_RGB()
+        self.patch_embed = Wang_Normal_ViT_RGB()
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.dist_token = nn.Parameter(torch.zeros(1, 1, embed_dim)) if distilled else None
         self.pos_embed = nn.Parameter(torch.zeros(1, 17, embed_dim))

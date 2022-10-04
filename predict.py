@@ -81,7 +81,7 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    model_path="E:\Python\Fault Diagnosis\Classification\models\wang_Normal_RGB_Deep3_10864_iForest_1000.pth" #预测模型路径
+    model_path="E:\Python\Fault Diagnosis\Classification\models\wang_Normal_RGB_1000.pth" #预测模型路径
 
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -90,11 +90,19 @@ if __name__ == '__main__':
     #root = "./testset/0"  # 数据集所在根目录
     #root = "./testset/1"  # 数据集所在根目录
     #root = "./testset/2"  # 数据集所在根目录
-    #root = "./testset/3"  # 数据集所在根目录
+    root = "./testset/3"  # 数据集所在根目录
     #root = "./testset/iForest_0"  # 经过孤立树处理的数据集所在根目录
     #root = "./testset/iForest_1"  # 经过孤立树处理的数据集所在根目录
     #root = "./testset/iForest_2"  # 经过孤立树处理的数据集所在根目录
-    root = "./testset/iForest_3"  # 经过孤立树处理的数据集所在根目录
+    #root = "./testset/iForest_3"  # 经过孤立树处理的数据集所在根目录
+    #root = "./testset/iForest_20X20_0"  # 经过孤立树处理的数据集所在根目录
+    #root = "./testset/iForest_20X20_1"  # 经过孤立树处理的数据集所在根目录
+    #root = "./testset/iForest_20X20_2"  # 经过孤立树处理的数据集所在根目录
+    #root = "./testset/UiForest_20X20_1"  # 无孤立树处理的数据集所在根目录
+    #root = "./testset/UiForest_Gui_20X20_1"  # 无孤立树处理的数据集所在根目录
+    #root = "./testset/UiForest_Features_20X20_1"  # 经过孤立树处理的数据集所在根目录
+    #root = "./testset/UiForest_Features_20X20_2"  # 经过孤立树处理的数据集所在根目录
+
 
     train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
