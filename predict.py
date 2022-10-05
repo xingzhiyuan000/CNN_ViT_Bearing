@@ -81,14 +81,14 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    model_path="E:\Python\Fault Diagnosis\Classification\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
+    model_path="E:\Python\Fault Diagnosis\Classification\models\wang_Normal_ViT_RGB_UiForest_1000_AB5.pth" #预测模型路径
 
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
     #加载自制数据集
-    root = "./testset/0"  # 数据集所在根目录
-    #root = "./testset/1"  # 数据集所在根目录
+    #root = "./testset/0"  # 数据集所在根目录
+    root = "./testset/1"  # 数据集所在根目录
     #root = "./testset/2"  # 数据集所在根目录
     #root = "./testset/3"  # 数据集所在根目录
     #root = "./testset/iForest_0"  # 经过孤立树处理的数据集所在根目录
