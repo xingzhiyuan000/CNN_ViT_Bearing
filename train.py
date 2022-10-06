@@ -29,14 +29,14 @@ import time
 
 save_epoch=20 #模型保存迭代次数间隔-10次保存一次
 Resume = True #设置为True是继续之前的训练 False为从零开始
-path_checkpoint = "E:\Python\Fault Diagnosis\Classification\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #模型路径
+path_checkpoint = ".\models\wang_Normal_ViT_RGB_UiForest_1000_B.pth" #模型路径
 
 #定义训练的设备
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("using {} device.".format(device))
 #准备数据集
 #加载自制数据集
-root = ".\dataset"  # 数据集所在根目录
+root = ".\dataset/2"  # 数据集所在根目录
 train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
 data_transform = {

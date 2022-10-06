@@ -6,7 +6,7 @@ import random
 import matplotlib.pyplot as plt
 
 
-def read_split_data(root: str, val_rate: float = 0.9):
+def read_split_data(root: str, val_rate: float = 0.99):
     random.seed(0)  # 保证随机结果可复现
     assert os.path.exists(root), "dataset root: {} does not exist.".format(root)
 
