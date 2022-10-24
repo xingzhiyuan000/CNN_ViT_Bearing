@@ -55,7 +55,7 @@ class depthwise_separable_conv(nn.Module):
 class Wang_Normal_ViT_RGB(nn.Module):
     def __init__(self):
         super(Wang_Normal_ViT_RGB, self).__init__()
-        # 1X10X10------64X10X10
+        # 3X10X10------64X10X10
         # self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1) #普通3X3卷积
         self.conv1 =nn.Conv2d(in_channels=3,out_channels=64,kernel_size=3,stride=1,padding=1,dilation=1)
         #self.conv1 =depthwise_separable_conv(3, 64) #深度可分离3X3卷积
