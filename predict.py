@@ -81,16 +81,19 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    #model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
-    model_path = ".\models\AD1_SNR2_Cut.pth"  # 预测模型路径
+    model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
+    # model_path = ".\models\AD5_SNR2_Cut.pth"  # 预测模型路径
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
     #加载自制数据集
     #root = "./testset/0"  # 数据集所在根目录
-    #root = "./testset/1"  # 数据集所在根目录
+    # root = "./testset/1"  # 数据集所在根目录
     #root = "./testset/2"  # 数据集所在根目录
     #root = "./testset/3"  # 数据集所在根目录
+    # root = "./testset/1_cut8"  # 数据集所在根目录
+    # root = "./testset/2_cut8"  # 数据集所在根目录
+    root = "./testset/3_cut8"  # 数据集所在根目录
     #root = "./testset/0_snr_-4"  # 数据集所在根目录
     #root = "./testset/0_snr_-2"  # 数据集所在根目录
     #root = "./testset/0_snr_8"  # 数据集所在根目录
@@ -98,17 +101,29 @@ if __name__ == '__main__':
     #root = "./testset/0_snr_4"  # 数据集所在根目录
     #root = "./testset/0_snr_2"  # 数据集所在根目录
     #root = "./testset/0_snr_0"  # 数据集所在根目录
-    #root = "./testset/0_snr_0_cut"  # 数据集所在根目录
-    #root = "./testset/0_snr_-4_cut"  # 数据集所在根目录
-    #root = "./testset/0_snr_-2_cut"  # 数据集所在根目录
-    #root = "./testset/0_snr_2_cut"  # 数据集所在根目录
-    #root = "./testset/0_snr_4_cut"  # 数据集所在根目录
-    #root = "./testset/0_snr_6_cut"  # 数据集所在根目录
-    #root = "./testset/0_snr_8_cut"  # 数据集所在根目录
+    #root = "./testset/0_snr_0_cut10"  # 数据集所在根目录
+    # root = "./testset/0_snr_-4_cut8"  # 数据集所在根目录
+    #root = "./testset/0_snr_-4_cut10"  # 数据集所在根目录
+    # root = "./testset/0_snr_-2_cut8"  # 数据集所在根目录
+    #root = "./testset/0_snr_-2_cut10"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut1"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut2"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut3"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut4"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut5"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut6"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut7"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut8"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut9"  # 数据集所在根目录
+    # root = "./testset/0_snr_2_cut10"  # 数据集所在根目录
+    #root = "./testset/0_snr_4_cut10"  # 数据集所在根目录
+    #root = "./testset/0_snr_6_cut10"  # 数据集所在根目录
+    #root = "./testset/0_snr_8_cut10"  # 数据集所在根目录
     #root = "./testset/3_snr_0"  # 数据集所在根目录
     #root = "./testset/3_snr_2"  # 数据集所在根目录
-    #root = "./testset/3_snr_0_cut"  # 数据集所在根目录
-    root = "./testset/3_snr_2_cut"  # 数据集所在根目录
+    #root = "./testset/3_snr_0_cut10"  # 数据集所在根目录
+    # root = "./testset/3_snr_2_cut10"  # 数据集所在根目录
+    # root = "./testset/3_snr_2_cut8"  # 数据集所在根目录
     #root = "./testset/iForest_0"  # 经过孤立树处理的数据集所在根目录
     #root = "./testset/iForest_1"  # 经过孤立树处理的数据集所在根目录
     #root = "./testset/iForest_2"  # 经过孤立树处理的数据集所在根目录
@@ -124,14 +139,17 @@ if __name__ == '__main__':
     #root = "./testset/time_1"  # 数据集所在根目录
     #root = "./testset/time_2"  # 数据集所在根目录
     #root = "./testset/time_3"  # 数据集所在根目录
+    #root = "./testset/time_3_snr_2"  # 数据集所在根目录
     #root = "./testset/fre_0"  # 数据集所在根目录
     #root = "./testset/fre_1"  # 数据集所在根目录
     #root = "./testset/fre_2"  # 数据集所在根目录
     #root = "./testset/fre_3"  # 数据集所在根目录
+    #root = "./testset/fre_3_snr_2"  # 数据集所在根目录
     #root = "./testset/wavelet_0"  # 数据集所在根目录
     #root = "./testset/wavelet_1"  # 数据集所在根目录
     #root = "./testset/wavelet_2"  # 数据集所在根目录
     #root = "./testset/wavelet_3"  # 数据集所在根目录
+    #root = "./testset/wavelet_3_snr_2"  # 数据集所在根目录
 
 
     train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)

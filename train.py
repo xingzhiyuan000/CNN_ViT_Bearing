@@ -29,7 +29,7 @@ import time
 #需要设置cuda的数据有: 数据，模型，损失函数
 
 save_epoch=20 #模型保存迭代次数间隔-10次保存一次
-Resume = False #设置为True是继续之前的训练 False为从零开始
+Resume = True #设置为True是继续之前的训练 False为从零开始
 path_checkpoint = ".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #模型路径
 
 #定义训练的设备
@@ -37,7 +37,7 @@ device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("using {} device.".format(device))
 #准备数据集
 #加载自制数据集
-root = ".\dataset/0"  # 数据集所在根目录
+root = ".\dataset/0_snr_-2_cut8"  # 数据集所在根目录
 train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
 data_transform = {
@@ -80,9 +80,9 @@ test_dataloader = torch.utils.data.DataLoader(test_data_set,
 #wang=Wang_DS_RGB() #深度可分离卷积网络-RGB三通道
 #wang=Wang_DS_RGB_Dropout() #深度可分离卷积网络-RGB三通道-含Dropout层
 #wang=densenet169()
-#wang=VisionTransformer()
+wang=VisionTransformer()
 #wang=Wang_Normal_RGB()
-wang=Wang_Normal_RGB_CNN() #新网络前部分卷积神经网络
+#wang=Wang_Normal_RGB_CNN() #新网络前部分卷积神经网络
 #wang=Wang_Normal_RGB_10864()
 #wang=Wang_Normal_RGB_Deep_10864()
 #wang=Wang_Normal_20RGB()
@@ -108,7 +108,7 @@ optimizer=torch.optim.SGD(wang.parameters(),lr=learing_rate)
 #设置训练网络的一些参数
 total_train_step=0 #记录训练的次数
 total_test_step=0 #记录测试的次数
-epoch=1000 #训练的轮数
+epoch=360 #训练的轮数
 
 #添加tensorboard
 writer=SummaryWriter("logs",flush_secs=5)
