@@ -37,7 +37,7 @@ device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("using {} device.".format(device))
 #准备数据集
 #加载自制数据集
-root = ".\dataset/0_snr_-2_cut8"  # 数据集所在根目录
+root = ".\dataset/0_snr_6_cut8"  # 数据集所在根目录
 train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
 data_transform = {
