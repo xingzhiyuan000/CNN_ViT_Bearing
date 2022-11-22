@@ -11,14 +11,23 @@ from sklearn.manifold import TSNE
 import random
 from matplotlib import pyplot as plt
 
-model_path="E:\Python\Fault Diagnosis\Classification\models\DenseNet_DS_RGB_normal100_162.pth" #预测模型路径
+# model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
+model_path=".\models\wang_Normal_RGB_CNN_1000.pth" #预测模型路径
+# model_path=".\models\wang_Normal_RGB_CNN_time_1000.pth" #预测模型路径
+# model_path=".\models\wang_Normal_RGB_CNN_fre_1000.pth" #预测模型路径
+# model_path=".\models\wang_Normal_RGB_CNN_wavelet_1000.pth" #预测模型路径
+# model_path="E:\Python\Fault Diagnosis\Classification\models\DenseNet_DS_RGB_normal100_162.pth" #预测模型路径
 
 #定义训练的设备
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("using {} device.".format(device))
 
 #加载自制数据集
-root = ".\dataset"  # 数据集所在根目录
+# root = ".\dataset"  # 数据集所在根目录
+root = "./testset/0"  # 数据集所在根目录
+# root = "./testset/time_0"  # 数据集所在根目录
+# root = "./testset/fre_0"  # 数据集所在根目录
+# root = "./testset/wavelet_0"  # 数据集所在根目录
 train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
 data_transform = {
@@ -73,6 +82,7 @@ X_tsne_2d = tsne.fit_transform(encoding_array) #执行降维
 print('降低后的维度尺寸为{}'.format(X_tsne_2d.shape))
 print('降低后的数据为{}'.format(X_tsne_2d))
 
+
 marker_list = ['.', ',', 'o', 'v', '^', '<', '>', '1', '2', '3', '4', '8', 's', 'p', 'P', '*', 'h', 'H', '+', 'x', 'X', 'D', 'd', '|', '_', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 class_list= np.unique(train_real_lable)
 #print(class_list)
@@ -87,15 +97,37 @@ random.shuffle(marker_list) #打乱绘画笔
 random.shuffle(palette) #打乱色板
 
 plt.figure(figsize=(14, 14))  # 设置绘制图像大小
+TXT_Matrix=[]
 for idx, diagnosis in enumerate(class_list): # 遍历每个类别
     color = palette[idx]
     marker = marker_list[idx%len(marker_list)]
 
     indices = np.where(train_real_lable == diagnosis) #从训练标签中找到现在训练故障类型的索引
+    #print("数据类型：", type(indices))
+    temp=np.array(indices)
+    temp_all=temp[0,:]
+    #print("数据类型：", type(temp_all))
+    for i, data in enumerate(X_tsne_2d):
+        if i in temp_all:
+            f=np.insert(data,2,np.array(diagnosis),axis=0)
+            TXT_Matrix.append(f)
     x = X_tsne_2d[indices, 0]  # 横坐标
     #print(x.shape)
+    #print(x)
     y=X_tsne_2d[indices,1]#纵坐标
+
     plt.scatter(x, y, color=color, marker=marker, label=diagnosis, s=30)
+
+#arr1 = np.array(TXT_Matrix)
+#print(arr1)
+
+#导出降维后的数据
+txt_file = open(r'.\t-SNE降维数据.txt', 'w',encoding='UTF-8')
+txt_file.seek(0) #定位
+txt_file.truncate() #清空文件
+for j in range (len (TXT_Matrix)):
+    txt_file.write(str(TXT_Matrix[j])+'\n')
+txt_file.close()
 
 plt.legend(fontsize=16, markerscale=1, bbox_to_anchor=(1, 1))
 plt.xticks([])

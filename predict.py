@@ -81,8 +81,8 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    # model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
-    model_path = ".\models\AA_SNR4_Tran0.1.pth"  # 预测模型路径
+    model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
+    # model_path = ".\models\AA_SNR4_Tran0.1.pth"  # 预测模型路径
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
@@ -91,11 +91,11 @@ if __name__ == '__main__':
     # root = "./testset/1"  # 数据集所在根目录
     #root = "./testset/2"  # 数据集所在根目录
     #root = "./testset/3"  # 数据集所在根目录
-    # root = "./testset/0_snr_-4_cut8"  # 数据集所在根目录
+    root = "./testset/0_snr_-4_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_-2_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_0_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_2_cut8"  # 数据集所在根目录
-    root = "./testset/0_snr_4_cut8"  # 数据集所在根目录
+    # root = "./testset/0_snr_4_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_6_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_8_cut8"  # 数据集所在根目录
     # root = "./testset/1_cut8"  # 数据集所在根目录
