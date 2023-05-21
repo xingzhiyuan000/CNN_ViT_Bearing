@@ -97,14 +97,12 @@ class Wang_100(nn.Module):
         self.bn1 = nn.BatchNorm2d(num_features=512)
         # 64X10X10------64X8X8
 
-
-
     def forward(self, x):
         x = F.relu(self.bn1(self.conv1(x)))
         # flatten: [B, C, H, W] -> [B, C, HW]
         # transpose: [B, C, HW] -> [B, HW, C]
         #[B, 512, 4X4] -> [B, 16, 512]
-        x=torch.flatten(x,dims=2).transpose(1, 2)
+        x=x.flatten(2).transpose(1, 2)
 
         # x = self.pool3(x).flatten(2).transpose(1, 2)
 
@@ -200,7 +198,7 @@ class Block(nn.Module):
         x = x + self.drop_path(self.mlp(self.norm2(x)))
         return x
 
-class VisionTransformer(nn.Module):
+class Wang_ViT_100(nn.Module):
     def __init__(self, num_classes=2,
                  embed_dim=512, depth=12, num_heads=8, mlp_ratio=4.0, qkv_bias=True,
                  qk_scale=None, representation_size=None, distilled=False, drop_ratio=0.,
@@ -226,17 +224,18 @@ class VisionTransformer(nn.Module):
             embed_layer (nn.Module): patch embedding layer
             norm_layer: (nn.Module): normalization layer
         """
-        super(VisionTransformer, self).__init__()
+        super(Wang_ViT_100, self).__init__()
         self.num_classes = num_classes
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
         self.num_tokens = 2 if distilled else 1
         norm_layer = norm_layer or partial(nn.LayerNorm, eps=1e-6)
         act_layer = act_layer or nn.GELU
 
-        self.patch_embed = Wang_Normal_ViT_RGB()
+        self.patch_embed = Wang_100()
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.dist_token = nn.Parameter(torch.zeros(1, 1, embed_dim)) if distilled else None
-        self.pos_embed = nn.Parameter(torch.zeros(1, 17, embed_dim))
+        # self.pos_embed = nn.Parameter(torch.zeros(1, 17, embed_dim))
+        self.pos_embed = nn.Parameter(torch.zeros(1, 101, embed_dim))
         self.pos_drop = nn.Dropout(p=drop_ratio)
 
         dpr = [x.item() for x in torch.linspace(0, drop_path_ratio, depth)]  # stochastic depth decay rule
@@ -324,9 +323,9 @@ def _init_vit_weights(m):
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model=VisionTransformer() #实例化网络模型
+    model=Wang_ViT_100() #实例化网络模型
     model=model.to(device) #将模型转移到cuda上
-    input=torch.ones((64,1,10,10)) #生成一个batchsize为64的，1个通道的10X10 tensor矩阵-可以用来检查网络输出大小
+    input=torch.ones((32,1,10,10)) #生成一个batchsize为64的，1个通道的10X10 tensor矩阵-可以用来检查网络输出大小
     input=input.to(device) #将数据转移到cuda上
     output=model(input) #将输入喂入网络中进行处理
     print(output.shape)

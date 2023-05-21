@@ -49,7 +49,8 @@ def make_dirs(path):
 
 def get_feature():
     pic_dir = './features/1.png'
-    model_path='.\models\wang_Normal_RGB_CNN_1000.pth'
+    model_path='.\models/rope_CNN_A_100Point.pth'
+    # model_path = '.\models/wang_Normal_ViT_RGB_UiForest_1000.pth'
     transform = transforms.ToTensor()
     img = get_picture(pic_dir, transform)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -73,19 +74,20 @@ def get_feature():
         features = v[0]
         iter_range = features.shape[0]
         for i in range(iter_range):
-            # plt.imshow(x[0].data.numpy()[0,i,:,:],cmap='jet')
+            # plt.imshow(features[0].data.numpy()[0,i,:,:],cmap='jet')
             if 'fc' in k:
                 continue
 
             # feature = features.data.numpy()
             feature = features.data.cpu().numpy()
             feature_img = feature[i, :, :]
+            # feature_img = feature[i, :]
             feature_img = np.asarray(feature_img * 255, dtype=np.uint8)
 
             dst_path = os.path.join(dst, k)
 
             make_dirs(dst_path)
-            # feature_img = cv2.applyColorMap(feature_img, cv2.COLORMAP_JET) #彩色图谱
+            feature_img = cv2.applyColorMap(feature_img, cv2.COLORMAP_JET) #彩色图谱
 
             if feature_img.shape[0] < therd_size:
                 tmp_file = os.path.join(dst_path, str(i) + '_' + str(therd_size) + '.png')

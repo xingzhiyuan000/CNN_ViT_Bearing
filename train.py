@@ -7,37 +7,43 @@ from torch import nn
 from torch.distributions import transforms
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from nets.Wang import *
-from nets.Wang_DS import *
-from nets.Wang_DS_Dropout import *
-from nets.Wang_DS_RGB import *
-from nets.Wang_Normal_RGB import *
-from nets.Wang_Normal_RGB_CNN import * #新网络前部分卷积神经网络
-from nets.Wang_DS_RGB_Dropout import *
-#from nets.Wang_DS_ViT_RGB import *
 from nets.Wang_Normal_ViT_RGB import *
-from nets.Wang_Normal_RGB_10864 import *
-from nets.Wang_Normal_RGB_Deep_10864 import *
-from nets.Wang_Normal_20RGB import *
-from nets.Wang_Normal_20RGB_V2 import *
-from nets.DenseModel import *
+from nets.Wang_ViT_100 import *
+
 from utils import read_split_data, plot_data_loader_image
 from my_dataset import MyDataSet
 import time
+from torch.optim import Adam, lr_scheduler
+import numpy as np
+import matplotlib.pyplot as plt
 
 #tensorboard使用方法：tensorboard --logdir "E:\Python\Fault Diagnosis\Classification\logs"
 #需要设置cuda的数据有: 数据，模型，损失函数
 
-save_epoch=20 #模型保存迭代次数间隔-10次保存一次
-Resume = True #设置为True是继续之前的训练 False为从零开始
-path_checkpoint = ".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #模型路径
+save_epoch=5 #模型保存迭代次数间隔-10次保存一次
+Resume = False #设置为True是继续之前的训练 False为从零开始
+# path_checkpoint = ".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #模型路径
+path_checkpoint = ".\models/rope_A_100Point.pth" #模型路径
 
 #定义训练的设备
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("using {} device.".format(device))
 #准备数据集
 #加载自制数据集
-root = ".\dataset/0_snr_6_cut8"  # 数据集所在根目录
+# root = ".\dataset/0_snr_6_cut8"  # 数据集所在根目录
+# root = ".\dataset/rope/Z"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope/A"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope/B"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope/C"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope/D"  # 钢丝绳数据集所在根目录
+
+root = ".\dataset/rope_100/A"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope_100/B"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope_100/C"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope_100/D"  # 钢丝绳数据集所在根目录
+
+# root = ".\dataset/rope/频域/A"  # 钢丝绳数据集所在根目录
+
 train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
 data_transform = {
@@ -54,7 +60,7 @@ test_data_set = MyDataSet(images_path=val_images_path,
 train_data_size=len(train_data_set)
 test_data_size=len(test_data_set)
 #加载数据集
-batch_size = 64
+batch_size = 8
 # nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
 # print('Using {} dataloader workers'.format(nw))
 train_dataloader = torch.utils.data.DataLoader(train_data_set,
@@ -74,19 +80,8 @@ test_dataloader = torch.utils.data.DataLoader(test_data_set,
 # test_dataloader=DataLoader(test_data,batch_size=64)
 
 #引入创新好的神经网络
-#wang=Wang() #正常普通卷积网络
-#wang=Wang_DS() #深度可分离卷积网络
-#wang=Wang_DS_Dropout() #深度可分离卷积网络-单通道-含Dropout层
-#wang=Wang_DS_RGB() #深度可分离卷积网络-RGB三通道
-#wang=Wang_DS_RGB_Dropout() #深度可分离卷积网络-RGB三通道-含Dropout层
-#wang=densenet169()
-wang=VisionTransformer()
-#wang=Wang_Normal_RGB()
-#wang=Wang_Normal_RGB_CNN() #新网络前部分卷积神经网络
-#wang=Wang_Normal_RGB_10864()
-#wang=Wang_Normal_RGB_Deep_10864()
-#wang=Wang_Normal_20RGB()
-#wang=Wang_Normal_20RGB_V2()
+# wang=VisionTransformer()
+wang=Wang_ViT_100()
 
 
 #对已训练好的模型进行微调
@@ -103,16 +98,18 @@ loss_fn=loss_fn.to(device) #将损失函数加载到cuda上训练
 
 #定义优化器
 learing_rate=1e-3 #学习速率
-optimizer=torch.optim.SGD(wang.parameters(),lr=learing_rate)
+# optimizer=torch.optim.SGD(wang.parameters(),lr=learing_rate)
+optimizer = Adam(wang.parameters(), lr=learing_rate)  # 选用AdamOptimizer
+scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.9) #使用学习率指数连续衰减
 
 #设置训练网络的一些参数
 total_train_step=0 #记录训练的次数
 total_test_step=0 #记录测试的次数
-epoch=360 #训练的轮数
+epoch=100 #训练的轮数
 
 #添加tensorboard
-writer=SummaryWriter("logs",flush_secs=5)
-
+# writer=SummaryWriter("logs",flush_secs=5)
+test_accuracy=np.array([])
 for i in range(epoch):
     print("---------第{}轮训练开始------------".format(i+1))
     #训练步骤开始
@@ -131,12 +128,17 @@ for i in range(epoch):
         total_train_step=total_train_step+1
         if total_train_step%10==0:
             print("总训练次数: {},损失值Loss: {}".format(total_train_step,loss.item()))
-            writer.add_scalar("train_loss",loss.item(),global_step=total_train_step)
+            # writer.add_scalar("train_loss",loss.item(),global_step=total_train_step)
+    if i % 5 == 0:
+        scheduler.step()
+    current_learn_rate = optimizer.state_dict()['param_groups'][0]['lr']
+    print("当前学习率：", current_learn_rate)
 
     #一轮训练后，进行测试
     wang.eval()
     total_test_loss=0 #总体loss
-    total_correct_num=0 #总体的正确率
+    total_correct_num=0 #总体的正确个数
+
     with torch.no_grad():
         for data in test_dataloader:
             imgs, targets=data
@@ -147,10 +149,11 @@ for i in range(epoch):
             total_test_loss=total_test_loss+loss+loss.item()
             correct_num=(outputs.argmax(1)==targets).sum() #1:表示横向取最大值所在项
             total_correct_num=total_correct_num+correct_num #计算预测正确的总数
+    test_accuracy=np.append(test_accuracy,(total_correct_num/test_data_size).cpu()) #保存每次迭代的测试准确率
     print("第{}训练后的测试集总体Loss为: {}".format(i+1,total_test_loss))
     print("第{}训练后的测试集总体正确率为: {}".format(i+1,total_correct_num/test_data_size))
-    writer.add_scalar("test_loss",total_test_loss, total_test_step) #添加测试loss到tensorboard中
-    writer.add_scalar("test_accuracy",total_correct_num/test_data_size,total_test_step) #添加测试数据集准确率到tensorboard中
+    # writer.add_scalar("test_loss",total_test_loss, total_test_step) #添加测试loss到tensorboard中
+    # writer.add_scalar("test_accuracy",total_correct_num/test_data_size,total_test_step) #添加测试数据集准确率到tensorboard中
     total_test_step=total_test_step+1
 
     time_str=time.strftime('%Y-%m-%d_%H-%M-%S',time.localtime(time.time()))
@@ -158,8 +161,19 @@ for i in range(epoch):
     filepath = os.path.join(save_path, "wang_{}_{}.pth".format(time_str,i+1))
     if (i+1) % save_epoch == 0:
         torch.save(wang,filepath) #保存训练好的模型
-    if(i>60): #若迭代次数大于60则降低学习率
-        learing_rate = 1e-4  # 学习速率
+    # if(i>60): #若迭代次数大于60则降低学习率
+    #     learing_rate = 1e-4  # 学习速率
 
-writer.close() #关闭tensorboard
+# writer.close() #关闭tensorboard
 
+print('第{}次迭代产生Accuracy最大值:{}'.format(np.argmax(test_accuracy),np.max(test_accuracy)))
+
+# fig, ax=plt.subplots()
+# x=np.arange(1,epoch+1,1)
+# ax.plot(x,test_accuracy)
+# ax.set_xlabel('Epoch')
+# ax.set_ylabel('Accuracy/%')
+#
+# plt.show()
+
+# print(test_accuracy)

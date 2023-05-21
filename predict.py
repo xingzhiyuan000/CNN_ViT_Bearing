@@ -81,7 +81,7 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
+    model_path=".\models/rope_A_100Point.pth" #预测模型路径
     # model_path = ".\models\AA_SNR4_Tran0.1.pth"  # 预测模型路径
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -89,9 +89,9 @@ if __name__ == '__main__':
     #加载自制数据集
     #root = "./testset/0"  # 数据集所在根目录
     # root = "./testset/1"  # 数据集所在根目录
-    #root = "./testset/2"  # 数据集所在根目录
+    # root = "./testset/2"  # 数据集所在根目录
     #root = "./testset/3"  # 数据集所在根目录
-    root = "./testset/0_snr_-4_cut8"  # 数据集所在根目录
+    # root = "./testset/0_snr_-4_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_-2_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_0_cut8"  # 数据集所在根目录
     # root = "./testset/0_snr_2_cut8"  # 数据集所在根目录
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     #root = "./testset/0_snr_8"  # 数据集所在根目录
     #root = "./testset/0_snr_6"  # 数据集所在根目录
     #root = "./testset/0_snr_4"  # 数据集所在根目录
-    #root = "./testset/0_snr_2"  # 数据集所在根目录
+    # root = "./testset/0_snr_2"  # 数据集所在根目录
     #root = "./testset/0_snr_0"  # 数据集所在根目录
     #root = "./testset/0_snr_0_cut10"  # 数据集所在根目录
     # root = "./testset/0_snr_-4_cut8"  # 数据集所在根目录
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     #root = "./testset/0_snr_6_cut10"  # 数据集所在根目录
     #root = "./testset/0_snr_8_cut10"  # 数据集所在根目录
     #root = "./testset/3_snr_0"  # 数据集所在根目录
-    #root = "./testset/3_snr_2"  # 数据集所在根目录
+    # root = "./testset/3_snr_2"  # 数据集所在根目录
     #root = "./testset/3_snr_0_cut10"  # 数据集所在根目录
     # root = "./testset/3_snr_2_cut10"  # 数据集所在根目录
     # root = "./testset/3_snr_2_cut8"  # 数据集所在根目录
@@ -146,20 +146,30 @@ if __name__ == '__main__':
     #root = "./testset/time_1"  # 数据集所在根目录
     #root = "./testset/time_2"  # 数据集所在根目录
     #root = "./testset/time_3"  # 数据集所在根目录
-    #root = "./testset/time_3_snr_2"  # 数据集所在根目录
+    # root = "./testset/time_3_snr_2"  # 数据集所在根目录
     #root = "./testset/fre_0"  # 数据集所在根目录
     #root = "./testset/fre_1"  # 数据集所在根目录
     #root = "./testset/fre_2"  # 数据集所在根目录
     #root = "./testset/fre_3"  # 数据集所在根目录
-    #root = "./testset/fre_3_snr_2"  # 数据集所在根目录
+    # root = "./testset/fre_3_snr_2"  # 数据集所在根目录
     #root = "./testset/wavelet_0"  # 数据集所在根目录
     #root = "./testset/wavelet_1"  # 数据集所在根目录
     #root = "./testset/wavelet_2"  # 数据集所在根目录
     #root = "./testset/wavelet_3"  # 数据集所在根目录
     #root = "./testset/wavelet_3_snr_2"  # 数据集所在根目录
+    # root = "./testset/rope/Z"  # 数据集所在根目录
+    # root = "./testset/rope/A"  # 数据集所在根目录
+    # root = "./testset/rope/B"  # 数据集所在根目录
+    # root = "./testset/rope/C"  # 数据集所在根目录
+    # root = "./testset/rope/D"  # 数据集所在根目录
+
+    # root = "./testset/rope_100/A"  # 数据集所在根目录
+    # root = "./testset/rope_100/B/"  # 数据集所在根目录
+    # root = "./testset/rope_100/C"  # 数据集所在根目录
+    root = "./testset/rope_100/D"  # 数据集所在根目录
 
 
-    train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
+    train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root,1)
 
     #添加tensorboard
     #writer=SummaryWriter("logs",flush_secs=5)
@@ -192,7 +202,7 @@ if __name__ == '__main__':
     json_file = open(json_label_path, 'r')
     class_indict = json.load(json_file)
     labels = [label for _, label in class_indict.items()]
-    confusion = ConfusionMatrix(num_classes=13, labels=labels) #设置类别数量
+    confusion = ConfusionMatrix(num_classes=2, labels=labels) #设置类别数量
 
     #test_real_lable = [] #存储测试集的真实标签
     total_correct_num=0 #总体的正确率

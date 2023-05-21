@@ -12,7 +12,10 @@ import random
 from matplotlib import pyplot as plt
 
 # model_path=".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #预测模型路径
-model_path=".\models\wang_Normal_RGB_CNN_1000.pth" #预测模型路径
+# model_path=".\models/rope_D_100Point.pth" #预测模型路径
+model_path=".\models/rope_A-D5_100Point.pth" #预测模型路径
+# model_path=".\models/rope_D-A5_100Point.pth" #预测模型路径
+
 # model_path=".\models\wang_Normal_RGB_CNN_time_1000.pth" #预测模型路径
 # model_path=".\models\wang_Normal_RGB_CNN_fre_1000.pth" #预测模型路径
 # model_path=".\models\wang_Normal_RGB_CNN_wavelet_1000.pth" #预测模型路径
@@ -24,10 +27,16 @@ print("using {} device.".format(device))
 
 #加载自制数据集
 # root = ".\dataset"  # 数据集所在根目录
-root = "./testset/0"  # 数据集所在根目录
+# root = "./testset/0"  # 数据集所在根目录
 # root = "./testset/time_0"  # 数据集所在根目录
 # root = "./testset/fre_0"  # 数据集所在根目录
 # root = "./testset/wavelet_0"  # 数据集所在根目录
+
+# root = "./testset/rope_100/A"  # 数据集所在根目录
+# root = "./testset/rope_100/B"  # 数据集所在根目录
+# root = "./testset/rope_100/B"  # 数据集所在根目录
+root = "./testset/rope_100/D"  # 数据集所在根目录
+
 train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
 
 data_transform = {
@@ -50,7 +59,7 @@ train_dataloader = torch.utils.data.DataLoader(train_data_set,
 model=torch.load(model_path)
 model=model.eval().to(device) #将模型加载到cuda
 
-summary(model,input_size=(3,10,10)) #输入一个通道为1的10X10数据，并展示出网络模型结构和参数
+summary(model,input_size=(1,10,10)) #输入一个通道为1的10X10数据，并展示出网络模型结构和参数
 
 model_names=get_graph_node_names(model) #获得模型各层的名称
 print(model_names)
@@ -63,22 +72,23 @@ for data in train_dataloader:
     imgs = imgs.to(device)  # 将图片加载到cuda上训练
     targets = targets.to(device)  # 加载到cuda上训练
     for name, module in model._modules.items():
-        #print(name)
+        # print(name)
         #print(module)
         imgs = module(imgs)
         #当为fc1层的时候将语义特征保存到encoding_array数组中
-        if name == "fc1":
+        if name == "head":
             featurs=imgs.squeeze().detach().cpu().numpy() #特征预处理
             encoding_array.append(featurs) #将特征保存到数组中
 encoding_array=np.array(encoding_array) #转换为np数组类型
-print(encoding_array.shape)
-#print(encoding_array)
+encoding_array_final=encoding_array[:,15,:]
+print(encoding_array_final.shape)
+print(encoding_array_final)
 #np.save('测试集语义特征.npy', encoding_array) #保存指定层的语义特征
 
 #-------------------开始绘制s-sne图--------------------
 
 tsne = TSNE(n_components=2, n_iter=1000,init='pca') #设置t-sne参数：降维到2维，迭代次数为500次
-X_tsne_2d = tsne.fit_transform(encoding_array) #执行降维
+X_tsne_2d = tsne.fit_transform(encoding_array_final) #执行降维
 print('降低后的维度尺寸为{}'.format(X_tsne_2d.shape))
 print('降低后的数据为{}'.format(X_tsne_2d))
 
