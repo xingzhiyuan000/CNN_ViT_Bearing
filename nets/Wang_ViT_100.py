@@ -325,7 +325,7 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model=Wang_ViT_100() #实例化网络模型
     model=model.to(device) #将模型转移到cuda上
-    input=torch.ones((32,1,10,10)) #生成一个batchsize为64的，1个通道的10X10 tensor矩阵-可以用来检查网络输出大小
+    input=torch.ones((1,1,10,10)) #生成一个batchsize为64的，1个通道的10X10 tensor矩阵-可以用来检查网络输出大小
     input=input.to(device) #将数据转移到cuda上
     output=model(input) #将输入喂入网络中进行处理
     print(output.shape)

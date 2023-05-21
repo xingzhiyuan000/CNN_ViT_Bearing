@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from nets.Wang_Normal_ViT_RGB import *
 from nets.Wang_ViT_100 import *
+from nets.resnet import *
 
 from utils import read_split_data, plot_data_loader_image
 from my_dataset import MyDataSet
@@ -44,7 +45,7 @@ root = ".\dataset/rope_100/A"  # 钢丝绳数据集所在根目录
 
 # root = ".\dataset/rope/频域/A"  # 钢丝绳数据集所在根目录
 
-train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root)
+train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root,0.2)
 
 data_transform = {
     "train": torchvision.transforms.Compose([torchvision.transforms.ToTensor()]),
@@ -60,7 +61,7 @@ test_data_set = MyDataSet(images_path=val_images_path,
 train_data_size=len(train_data_set)
 test_data_size=len(test_data_set)
 #加载数据集
-batch_size = 8
+batch_size = 64
 # nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
 # print('Using {} dataloader workers'.format(nw))
 train_dataloader = torch.utils.data.DataLoader(train_data_set,
@@ -80,8 +81,9 @@ test_dataloader = torch.utils.data.DataLoader(test_data_set,
 # test_dataloader=DataLoader(test_data,batch_size=64)
 
 #引入创新好的神经网络
-# wang=VisionTransformer()
-wang=Wang_ViT_100()
+wang=VisionTransformer()
+# wang=Wang_ViT_100()
+# wang=resnet50()
 
 
 #对已训练好的模型进行微调
@@ -105,13 +107,14 @@ scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.9) #使用学习率指
 #设置训练网络的一些参数
 total_train_step=0 #记录训练的次数
 total_test_step=0 #记录测试的次数
-epoch=100 #训练的轮数
+epoch=1000 #训练的轮数
 
 #添加tensorboard
 # writer=SummaryWriter("logs",flush_secs=5)
 test_accuracy=np.array([])
 for i in range(epoch):
     print("---------第{}轮训练开始------------".format(i+1))
+    total_train_loss = 0  # 训练集整体Loss
     #训练步骤开始
     wang.train() #会对归一化及dropout等有作用
     for data in train_dataloader:
@@ -124,7 +127,7 @@ for i in range(epoch):
         optimizer.zero_grad() #清零梯度
         loss.backward() #反向传播
         optimizer.step()
-
+        total_train_loss = total_train_loss + loss.item()
         total_train_step=total_train_step+1
         if total_train_step%10==0:
             print("总训练次数: {},损失值Loss: {}".format(total_train_step,loss.item()))
@@ -133,6 +136,7 @@ for i in range(epoch):
         scheduler.step()
     current_learn_rate = optimizer.state_dict()['param_groups'][0]['lr']
     print("当前学习率：", current_learn_rate)
+    print("第{}训练后的【训练集-整体】Loss为: {}".format(i + 1, total_train_loss))
 
     #一轮训练后，进行测试
     wang.eval()
@@ -163,6 +167,10 @@ for i in range(epoch):
         torch.save(wang,filepath) #保存训练好的模型
     # if(i>60): #若迭代次数大于60则降低学习率
     #     learing_rate = 1e-4  # 学习速率
+
+    if (i + 1) % 30 == 0:
+        scheduler.step()  # 每5次调整一次学习率
+    current_learn_rate = optimizer.state_dict()['param_groups'][0]['lr']
 
 # writer.close() #关闭tensorboard
 

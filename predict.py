@@ -3,7 +3,6 @@ import torch
 import torchvision
 from PIL import Image
 from torch.utils.tensorboard import SummaryWriter
-from nets.Wang import *
 import matplotlib.pyplot as plt
 from utils import read_split_data, plot_data_loader_image
 from my_dataset import MyDataSet
@@ -81,7 +80,7 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    model_path=".\models/rope_A_100Point.pth" #预测模型路径
+    model_path=".\models/wang_2023-05-21_23-59-37_50.pth" #预测模型路径
     # model_path = ".\models\AA_SNR4_Tran0.1.pth"  # 预测模型路径
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -162,6 +161,7 @@ if __name__ == '__main__':
     # root = "./testset/rope/B"  # 数据集所在根目录
     # root = "./testset/rope/C"  # 数据集所在根目录
     # root = "./testset/rope/D"  # 数据集所在根目录
+
 
     # root = "./testset/rope_100/A"  # 数据集所在根目录
     # root = "./testset/rope_100/B/"  # 数据集所在根目录

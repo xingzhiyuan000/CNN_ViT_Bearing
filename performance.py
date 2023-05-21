@@ -18,14 +18,13 @@ from thop import clever_format, profile
 
 if __name__ == '__main__':
 
-    model_path = ".\models/rope_A_100Point.pth"  # 预测模型路径
+    model_path = ".\models/ResNet_A.pth"  # 预测模型路径
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
     #加载自制数据集
 
     root = "./testset/rope_100/A"  # 数据集所在根目录
-
 
 
     train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root,1)
@@ -65,7 +64,7 @@ if __name__ == '__main__':
     #test_real_lable = [] #存储测试集的真实标签
     total_correct_num=0 #总体的正确率
     model.eval() #设置为测试模式
-    cal_lantency=0 #0-全部显示 1-只计算前向传播速度
+    cal_lantency=1 #0-全部显示 1-只计算前向传播速度
     with torch.no_grad():
         start = time.time()
         for data in tqdm(test_dataloader):
