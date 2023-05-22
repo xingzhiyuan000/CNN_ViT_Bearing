@@ -63,12 +63,12 @@ class Wang_Normal_ViT_RGB(nn.Module):
         # 64X10X10------64X8X8
         self.pool1 = nn.MaxPool2d(kernel_size=3,stride=1,padding=0,dilation=1)
         # 64X8X8------256X8X8
-        self.conv2 =nn.Conv2d(in_channels=64,out_channels=256,kernel_size=3,stride=1,padding=1,dilation=1)
+        self.conv2 =nn.Conv2d(in_channels=64,out_channels=256,kernel_size=3,stride=1,padding=1,dilation=1) #out_channels=256
         self.bn2 = nn.BatchNorm2d(num_features=256)
         # 256X8X8------256X6X6
         self.pool2 = nn.MaxPool2d(kernel_size=3, stride=1, padding=0, dilation=1)
         # 256X6X6------512X6X6
-        self.conv3 = nn.Conv2d(in_channels=256,out_channels=512,kernel_size=3,stride=1,padding=1,dilation=1)
+        self.conv3 = nn.Conv2d(in_channels=256,out_channels=512,kernel_size=3,stride=1,padding=1,dilation=1) #out_channels=512
         self.bn3 = nn.BatchNorm2d(num_features=512)
         # 512X6X6------512X4X4
         self.pool3 = nn.MaxPool2d(kernel_size=3, stride=1, padding=0, dilation=1)

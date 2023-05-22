@@ -80,7 +80,7 @@ class ConfusionMatrix(object):
 
 if __name__ == '__main__':
 
-    model_path=".\models/wang_2023-05-21_23-59-37_50.pth" #预测模型路径
+    model_path=".\models/wang_2023-05-22_04-07-32_100.pth" #预测模型路径
     # model_path = ".\models\AA_SNR4_Tran0.1.pth"  # 预测模型路径
     #定义训练的设备
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -163,10 +163,10 @@ if __name__ == '__main__':
     # root = "./testset/rope/D"  # 数据集所在根目录
 
 
-    # root = "./testset/rope_100/A"  # 数据集所在根目录
+    root = "./testset/rope_100/A"  # 数据集所在根目录
     # root = "./testset/rope_100/B/"  # 数据集所在根目录
     # root = "./testset/rope_100/C"  # 数据集所在根目录
-    root = "./testset/rope_100/D"  # 数据集所在根目录
+    # root = "./testset/rope_100/D"  # 数据集所在根目录
 
 
     train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root,1)

@@ -22,9 +22,9 @@ import matplotlib.pyplot as plt
 #需要设置cuda的数据有: 数据，模型，损失函数
 
 save_epoch=5 #模型保存迭代次数间隔-10次保存一次
-Resume = False #设置为True是继续之前的训练 False为从零开始
+Resume = True #设置为True是继续之前的训练 False为从零开始
 # path_checkpoint = ".\models\wang_Normal_ViT_RGB_UiForest_1000.pth" #模型路径
-path_checkpoint = ".\models/rope_A_100Point.pth" #模型路径
+path_checkpoint = ".\models/wang_ViT_16_A.pth" #模型路径
 
 #定义训练的设备
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,14 +38,13 @@ print("using {} device.".format(device))
 # root = ".\dataset/rope/C"  # 钢丝绳数据集所在根目录
 # root = ".\dataset/rope/D"  # 钢丝绳数据集所在根目录
 
-root = ".\dataset/rope_100/A"  # 钢丝绳数据集所在根目录
-# root = ".\dataset/rope_100/B"  # 钢丝绳数据集所在根目录
+# root = ".\dataset/rope_100/A"  # 钢丝绳数据集所在根目录
+root = ".\dataset/rope_100/B"  # 钢丝绳数据集所在根目录
 # root = ".\dataset/rope_100/C"  # 钢丝绳数据集所在根目录
 # root = ".\dataset/rope_100/D"  # 钢丝绳数据集所在根目录
 
-# root = ".\dataset/rope/频域/A"  # 钢丝绳数据集所在根目录
 
-train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root,0.2)
+train_images_path, train_images_label, val_images_path, val_images_label = read_split_data(root,0.95)
 
 data_transform = {
     "train": torchvision.transforms.Compose([torchvision.transforms.ToTensor()]),
@@ -61,7 +60,7 @@ test_data_set = MyDataSet(images_path=val_images_path,
 train_data_size=len(train_data_set)
 test_data_size=len(test_data_set)
 #加载数据集
-batch_size = 64
+batch_size = 32
 # nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
 # print('Using {} dataloader workers'.format(nw))
 train_dataloader = torch.utils.data.DataLoader(train_data_set,
@@ -99,7 +98,7 @@ loss_fn=nn.CrossEntropyLoss()
 loss_fn=loss_fn.to(device) #将损失函数加载到cuda上训练
 
 #定义优化器
-learing_rate=1e-3 #学习速率
+learing_rate=1e-4 #学习速率
 # optimizer=torch.optim.SGD(wang.parameters(),lr=learing_rate)
 optimizer = Adam(wang.parameters(), lr=learing_rate)  # 选用AdamOptimizer
 scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.9) #使用学习率指数连续衰减
@@ -107,11 +106,12 @@ scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.9) #使用学习率指
 #设置训练网络的一些参数
 total_train_step=0 #记录训练的次数
 total_test_step=0 #记录测试的次数
-epoch=1000 #训练的轮数
+epoch=100 #训练的轮数
 
 #添加tensorboard
 # writer=SummaryWriter("logs",flush_secs=5)
 test_accuracy=np.array([])
+train_loss=np.array([])
 for i in range(epoch):
     print("---------第{}轮训练开始------------".format(i+1))
     total_train_loss = 0  # 训练集整体Loss
@@ -132,11 +132,13 @@ for i in range(epoch):
         if total_train_step%10==0:
             print("总训练次数: {},损失值Loss: {}".format(total_train_step,loss.item()))
             # writer.add_scalar("train_loss",loss.item(),global_step=total_train_step)
+
     if i % 5 == 0:
         scheduler.step()
     current_learn_rate = optimizer.state_dict()['param_groups'][0]['lr']
     print("当前学习率：", current_learn_rate)
     print("第{}训练后的【训练集-整体】Loss为: {}".format(i + 1, total_train_loss))
+    train_loss = np.append(train_loss, total_train_loss)  # 保存每次迭代的测试准确率
 
     #一轮训练后，进行测试
     wang.eval()
@@ -168,7 +170,7 @@ for i in range(epoch):
     # if(i>60): #若迭代次数大于60则降低学习率
     #     learing_rate = 1e-4  # 学习速率
 
-    if (i + 1) % 30 == 0:
+    if (i + 1) % 2 == 0:
         scheduler.step()  # 每5次调整一次学习率
     current_learn_rate = optimizer.state_dict()['param_groups'][0]['lr']
 
@@ -176,12 +178,23 @@ for i in range(epoch):
 
 print('第{}次迭代产生Accuracy最大值:{}'.format(np.argmax(test_accuracy),np.max(test_accuracy)))
 
+'''
+绘制准确率曲线
+'''
 # fig, ax=plt.subplots()
 # x=np.arange(1,epoch+1,1)
 # ax.plot(x,test_accuracy)
 # ax.set_xlabel('Epoch')
 # ax.set_ylabel('Accuracy/%')
-#
 # plt.show()
-
 # print(test_accuracy)
+
+'''
+绘制Loss曲线
+'''
+fig, ax=plt.subplots()
+x=np.arange(1,epoch+1,1)
+ax.plot(x,train_loss)
+ax.set_xlabel('Epoch')
+ax.set_ylabel('Loss/%')
+plt.show()

@@ -20,7 +20,8 @@ if __name__ == '__main__':
 
     model_path = ".\models/ResNet_A.pth"  # 预测模型路径
     #定义训练的设备
-    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
     print("using {} device.".format(device))
     #加载自制数据集
 
